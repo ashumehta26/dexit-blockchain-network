@@ -6,7 +6,12 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"context"
 	"github.com/spf13/cobra"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
+	
 )
 
 var (
@@ -27,7 +32,31 @@ var (
 	home 					string
 )
 
+var infuraURL = "https://testnet.dexit.network";
+
 // startCmd represents the start command
+var chainidcmd = &cobra.Command{
+	Use:   "chainid",
+	Short: "this command allow validator to stake DXT",
+	Long: "",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("chainid called");
+		client, err := ethclient.DialContext(context.Background(),infuraURL);
+		if err != nil {
+			log.Fatalf(err)
+		}
+		cont, err :=  CD.NewCDTransactor(common.HexToAddress("0x83318095186B28f8195d29c1902c1288381406F8"), client)
+		if err != nil {
+			log.Fatalf(err)
+		}
+		methodname, err := cont.getchainID(100)
+		if err != nil {
+			log.Fatalf(err)
+		}
+		fmt.Println("Method Name:",methodname)
+	},
+}
+
 var stakeCmd = &cobra.Command{
 	Use:   "staking",
 	Short: "this command allow validator to stake DXT",
@@ -59,8 +88,10 @@ func init() {
 	rootCmd.AddCommand(stakeCmd)
 	stakeCmd.AddCommand(createValidator)
 	stakeCmd.AddCommand(editValidator)
+	rootCmd.AddCommand(chainidcmd)
+	chainidFlags()
 	createValidatorFlags();
-	//editValidatorFlags();
+	editValidatorFlags();
 
 
 
@@ -134,36 +165,41 @@ func createValidatorFlags(){
 
 func editValidatorFlags(){
 	//Chain ID flag
-	createValidator.Flags().StringVarP(&chainID,"chain-id","c", "", "the chain id of dexit chain.");
-	createValidator.MarkFlagRequired("chain-id");
+	editValidator.Flags().StringVarP(&chainID,"chain-id","c", "", "the chain id of dexit chain.");
+	editValidator.MarkFlagRequired("chain-id");
 
 	//from flag
-	createValidator.Flags().StringVarP(&from,"from","f", "", "address of private key with which to sign this tx, also be used as the validator operator address.");
-	createValidator.MarkFlagRequired("from")
+	editValidator.Flags().StringVarP(&from,"from","f", "", "address of private key with which to sign this tx, also be used as the validator operator address.");
+	editValidator.MarkFlagRequired("from")
 
 	//Moniker flag
-	createValidator.Flags().StringVarP(&validatorName,"moniker","m", "", "validator name");
-	createValidator.MarkFlagRequired("moniker")
+	editValidator.Flags().StringVarP(&validatorName,"moniker","m", "", "validator name");
+	editValidator.MarkFlagRequired("moniker")
 
 	//Identity flag
-	createValidator.Flags().StringVarP(&identity,"identity","i", "", "optional identity signature (ex. UPort or Keybase)");
+	editValidator.Flags().StringVarP(&identity,"identity","i", "", "optional identity signature (ex. UPort or Keybase)");
 	
 	//Website flag
-	createValidator.Flags().StringVarP(&website,"website","w", "", "optional website");
+	editValidator.Flags().StringVarP(&website,"website","w", "", "optional website");
 	
 	//Details flag
-	createValidator.Flags().StringVarP(&details	,"details","", "", "optional details");
+	editValidator.Flags().StringVarP(&details	,"details","", "", "optional details");
 	
 	//Commission rate flag
-	createValidator.Flags().Float32VarP(&commissionRate,"commission-rate","", 0, "The initial commission rate percentage, it has 8 decimal places.");
-	createValidator.MarkFlagRequired("commission-rate")
+	editValidator.Flags().Float32VarP(&commissionRate,"commission-rate","", 0, "The initial commission rate percentage, it has 8 decimal places.");
+	editValidator.MarkFlagRequired("commission-rate")
 	
 	//side Chain_ID  flag
-	createValidator.Flags().Uint64VarP(&sideChainID,"side-chain-id","", 0, "chain-id of the side chain the validator belongs to");
-	createValidator.MarkFlagRequired("side-chain-id")
+	editValidator.Flags().Uint64VarP(&sideChainID,"side-chain-id","", 0, "chain-id of the side chain the validator belongs to");
+	editValidator.MarkFlagRequired("side-chain-id")
 
 	//side fee Address flag
-	createValidator.Flags().StringVarP(&sideFeeAddr,"side-fee-addr","", "", "address that validator collects fee rewards on side chain, please use hex format prefixed with 0x.");
-	createValidator.MarkFlagRequired("side-fee-addr")
+	editValidator.Flags().StringVarP(&sideFeeAddr,"side-fee-addr","", "", "address that validator collects fee rewards on side chain, please use hex format prefixed with 0x.");
+	editValidator.MarkFlagRequired("side-fee-addr")
 
+}
+
+func chainidFlags () {
+	chainidcmd.Flags().StringVarP(&chainID,"chain-id","c", "", "the chain id of dexit chain.");
+	chainidcmd.MarkFlagRequired("chain-id");
 }
