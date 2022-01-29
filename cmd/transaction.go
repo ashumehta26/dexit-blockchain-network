@@ -24,7 +24,7 @@ var (
 	amt 	int64
 )
 
-var infuraURL = "https://testnet.dexit.network";
+// var infuraURL = "https://testnet.dexit.network";
 
 var sendtransaction = &cobra.Command{
 	Use:   "sendtransaction",

@@ -6,11 +6,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"context"
 	"github.com/spf13/cobra"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	
 )
 
@@ -34,28 +30,7 @@ var (
 
 var infuraURL = "https://testnet.dexit.network";
 
-// startCmd represents the start command
-var chainidcmd = &cobra.Command{
-	Use:   "chainid",
-	Short: "this command allow validator to stake DXT",
-	Long: "",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("chainid called");
-		client, err := ethclient.DialContext(context.Background(),infuraURL);
-		if err != nil {
-			log.Fatalf(err)
-		}
-		cont, err :=  CD.NewCDTransactor(common.HexToAddress("0x83318095186B28f8195d29c1902c1288381406F8"), client)
-		if err != nil {
-			log.Fatalf(err)
-		}
-		methodname, err := cont.getchainID(100)
-		if err != nil {
-			log.Fatalf(err)
-		}
-		fmt.Println("Method Name:",methodname)
-	},
-}
+
 
 var stakeCmd = &cobra.Command{
 	Use:   "staking",
@@ -72,6 +47,15 @@ var createValidator = &cobra.Command{
 	Long: "",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("createValidator is called");
+	},
+}
+
+var chainidcmd = &cobra.Command{
+	Use:   "dexit-edit-validator",
+	Short: "edit dexit validator",
+	Long: "",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("editValidator is called");
 	},
 }
 
